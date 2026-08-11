@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 const WORKFLOW_ID = "5a369ada-ba0c-4e90-989c-b138d9e02cd4";
 
@@ -18,7 +18,7 @@ let currentRun = null;
 
 app.get("/", (req, res) => {
   res.json({
-    message: "AI Workflow Builder backend is running"
+    message: "AI Workflow Builder backend is running",
   });
 });
 
@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 
 app.get("/health", (req, res) => {
   res.json({
-    status: "ok"
+    status: "ok",
   });
 });
 
@@ -89,27 +89,26 @@ app.post("/run", async (req, res) => {
         trigger_type: "manual",
         llmOutput,
         httpOutput,
-        isUrgent
+        isUrgent,
       };
 
       return res.json({
         workflow_id: WORKFLOW_ID,
         status: "paused",
-        message: "Workflow paused — approval required."
+        message: "Workflow paused — approval required.",
       });
     }
 
     return res.json({
       workflow_id: WORKFLOW_ID,
-      status: "completed"
+      status: "completed",
     });
-
   } catch (error) {
     console.error(error);
 
     return res.status(500).json({
       status: "failed",
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -167,7 +166,7 @@ app.post("/webhook", async (req, res) => {
         payload: req.body,
         llmOutput,
         httpOutput,
-        isUrgent
+        isUrgent,
       };
 
       return res.json({
@@ -176,7 +175,7 @@ app.post("/webhook", async (req, res) => {
         trigger_type: "webhook",
         status: "paused",
         message:
-          "Webhook triggered workflow. Approval required."
+          "Webhook triggered workflow. Approval required.",
       });
     }
 
@@ -184,16 +183,15 @@ app.post("/webhook", async (req, res) => {
       success: true,
       workflow_id: WORKFLOW_ID,
       trigger_type: "webhook",
-      status: "completed"
+      status: "completed",
     });
-
   } catch (error) {
     console.error("Webhook error:", error);
 
     return res.status(500).json({
       success: false,
       status: "failed",
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -214,7 +212,7 @@ app.post("/approve", async (req, res) => {
     if (!currentRun) {
       return res.status(400).json({
         success: false,
-        error: "No workflow is waiting for approval."
+        error: "No workflow is waiting for approval.",
       });
     }
 
@@ -225,7 +223,7 @@ app.post("/approve", async (req, res) => {
       return res.status(403).json({
         success: false,
         error:
-          "Only owner or editor can approve this step."
+          "Only owner or editor can approve this step.",
       });
     }
 
@@ -242,7 +240,7 @@ app.post("/approve", async (req, res) => {
       saved: true,
       customer_analysis: currentRun.llmOutput,
       urgent: currentRun.isUrgent,
-      trigger_type: currentRun.trigger_type
+      trigger_type: currentRun.trigger_type,
     };
 
     const workflowId = currentRun.workflow_id;
@@ -256,16 +254,15 @@ app.post("/approve", async (req, res) => {
       workflow_id: workflowId,
       status: "completed",
       approved_by_role: role,
-      db_write: result
+      db_write: result,
     });
-
   } catch (error) {
     console.error("Approval error:", error);
 
     return res.status(500).json({
       success: false,
       status: "failed",
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -274,8 +271,8 @@ app.post("/approve", async (req, res) => {
 // SERVER
 // --------------------------------------------------
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(
-    `Backend running at http://localhost:${PORT}`
+    `Backend running on port ${PORT}`
   );
 });
