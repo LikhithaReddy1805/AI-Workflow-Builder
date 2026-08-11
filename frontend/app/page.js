@@ -30,6 +30,9 @@ const steps = [
   },
 ];
 
+const BACKEND_URL =
+  "https://ai-workflow-builder-hqfj.onrender.com";
+
 export default function Home() {
   const [status, setStatus] = useState("ready");
   const [message, setMessage] = useState(
@@ -42,7 +45,7 @@ export default function Home() {
 
     try {
       const response = await fetch(
-        "http://localhost:4000/run",
+        `${BACKEND_URL}/run`,
         {
           method: "POST",
           headers: {
@@ -54,7 +57,9 @@ export default function Home() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Workflow failed.");
+        throw new Error(
+          data.error || "Workflow failed."
+        );
       }
 
       if (data.status === "paused") {
@@ -64,13 +69,16 @@ export default function Home() {
         );
       } else {
         setStatus("completed");
-        setMessage("Workflow completed successfully.");
+        setMessage(
+          "Workflow completed successfully."
+        );
       }
     } catch (error) {
       console.error(error);
       setStatus("failed");
       setMessage(
-        error.message || "Could not connect to backend."
+        error.message ||
+          "Could not connect to backend."
       );
     }
   }
@@ -81,7 +89,7 @@ export default function Home() {
 
     try {
       const response = await fetch(
-        "http://localhost:4000/approve",
+        `${BACKEND_URL}/approve`,
         {
           method: "POST",
           headers: {
@@ -407,9 +415,12 @@ export default function Home() {
             >
               {status === "ready" && "READY"}
               {status === "running" && "RUNNING"}
-              {status === "paused" && "AWAITING APPROVAL"}
-              {status === "approving" && "APPROVING"}
-              {status === "completed" && "COMPLETED"}
+              {status === "paused" &&
+                "AWAITING APPROVAL"}
+              {status === "approving" &&
+                "APPROVING"}
+              {status === "completed" &&
+                "COMPLETED"}
               {status === "failed" && "FAILED"}
             </div>
 
@@ -561,8 +572,7 @@ export default function Home() {
                 marginTop: "22px",
                 padding: "22px",
                 background: "#fff7ed",
-                border:
-                  "1px solid #fdba74",
+                border: "1px solid #fdba74",
                 borderRadius: "12px",
               }}
             >
@@ -578,8 +588,7 @@ export default function Home() {
 
               <p
                 style={{
-                  margin:
-                    "7px 0 15px",
+                  margin: "7px 0 15px",
                   fontSize: "14px",
                   color: "#7c2d12",
                 }}
@@ -616,8 +625,7 @@ export default function Home() {
                 marginTop: "22px",
                 padding: "18px",
                 background: "#f0fdf4",
-                border:
-                  "1px solid #86efac",
+                border: "1px solid #86efac",
                 borderRadius: "10px",
                 textAlign: "center",
                 color: "#166534",
@@ -625,7 +633,8 @@ export default function Home() {
                 fontWeight: "700",
               }}
             >
-              ✓ All workflow steps completed successfully
+              ✓ All workflow steps completed
+              successfully
             </div>
           )}
         </div>
